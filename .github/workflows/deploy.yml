@@ -1,0 +1,38 @@
+name: CI/CD Deploy
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          cd services/watchlist && npm ci
+          cd ../bot && npm ci
+          cd ../../frontend && npm ci
+
+      - name: Run tests (placeholder)
+        run: echo "No tests defined"
+
+      - name: Deploy Watchlist to Cloud Run
+        run: |
+          # Autenticación a GCP con secretos
+          gcloud run deploy watchlist --source=services/watchlist --region=us-central1 --platform=managed --quiet
+
+      - name: Deploy Bot to Heroku
+        run: |
+          # Heroku CLI login usando HEROKU_API_KEY secreto
+          heroku deploy:jar services/bot/ target/*.jar --app lumen-bot
+
+      - name: Deploy Frontend to Netlify
+        run: |
+          npx netlify deploy --dir=frontend/public --prod --auth ${{ secrets.NETLIFY_TOKEN }}
