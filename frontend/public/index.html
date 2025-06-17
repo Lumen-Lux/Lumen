@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LUMEN Insights Dashboard</title>
+</head>
+<body>
+  <h1>Top 10 Pain Points</h1>
+  <ul id="list"></ul>
+  <script>
+    async function load() {
+      const res = await fetch('https://<CLOUD_RUN_URL>/watchlist');
+      const data = await res.json();
+      const list = document.getElementById('list');
+      data.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item.title;
+        list.appendChild(li);
+      });
+    }
+    load();
+  </script>
+</body>
+</html>
